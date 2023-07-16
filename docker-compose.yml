@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${SAROS_RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${SAROS_RABBITMQ_PASSWORD}
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  saros-products-db:
+    container_name: saros-products-db
+    image: postgres:14.3-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: products-db
+      POSTGRES_USER: ${SAROS_DB_USERNAME}
+      POSTGRES_PASSWORD: ${SAROS_DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-products:/var/lib/postgresql/products/data
+
+  saros-news-db:
+    container_name: saros-news-db
+    image: postgres:14.3-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: news-db
+      POSTGRES_USER: ${SAROS_DB_USERNAME}
+      POSTGRES_PASSWORD: ${SAROS_DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - db-news:/var/lib/postgresql/news/data
+
+volumes:
+  db-products:
+    driver: local
+  db-news:
+    driver: local
