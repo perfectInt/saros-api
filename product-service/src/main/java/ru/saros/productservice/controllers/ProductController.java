@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.saros.productservice.models.Product;
 import ru.saros.productservice.services.ProductService;
+import ru.saros.productservice.views.ProductView;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,7 +17,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/products")
-    public List<Product> getAllProducts() {
+    public List<ProductView> getAllProducts() {
         return productService.getProducts();
     }
 

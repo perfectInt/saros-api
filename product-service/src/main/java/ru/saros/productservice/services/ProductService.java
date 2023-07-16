@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.saros.productservice.models.Image;
 import ru.saros.productservice.models.Product;
 import ru.saros.productservice.repositories.ProductRepository;
+import ru.saros.productservice.views.ProductView;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -18,8 +19,24 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public List<Product> getProducts() {
-        return productRepository.findAll();
+    public List<ProductView> getProducts() {
+        List<Product> products = productRepository.findAll();
+        List<ProductView> productViews = new ArrayList<>();
+        for (Product product : products) {
+            ProductView productView = new ProductView();
+            productView.setTitle(product.getTitle());
+            productView.setCategory(product.getCategory());
+            productView.setDescription(product.getDescription());
+            productView.setPreviewImageId(product.getPreviewImageId());
+            productView.setPrice(product.getPrice());
+            List<Long> ids = new ArrayList<>();
+            for (Image image : product.getImages()) {
+                ids.add(image.getId());
+            }
+            productView.setImagesIds(ids);
+            productViews.add(productView);
+        }
+        return productViews;
     }
 
     @Transactional
@@ -30,10 +47,11 @@ public class ProductService {
             image.setProduct(product);
             images.add(image);
         }
-        product.setPreviewImageId(images.get(0).getId());
         images.get(0).setPreviewImage(true);
         product.setImages(images);
-        productRepository.save(product);
+        Product toUpdatePreviewImage = productRepository.save(product);
+        toUpdatePreviewImage.setPreviewImageId(images.get(0).getId());
+        productRepository.save(toUpdatePreviewImage);
     }
 
     public void deleteProduct(Long id) {
