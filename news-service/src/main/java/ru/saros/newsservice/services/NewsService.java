@@ -29,8 +29,8 @@ public class NewsService {
     }
 
     public List<NewsView> getNewsByPages(Integer page) {
-//        if (page == null) page = 0;
-        Pageable paging = PageRequest.of(page, 10, Sort.by("newsDate"));
+        if (page == null) page = 0;
+        Pageable paging = PageRequest.of(page, 10, Sort.by("newsDate").descending());
         Page<News> news = newsRepository.findAll(paging);
         List<NewsView> newsViews = new ArrayList<>();
         for (News n : news) {

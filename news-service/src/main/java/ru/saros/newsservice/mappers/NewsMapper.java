@@ -15,7 +15,7 @@ public class NewsMapper {
         NewsView newsView = new NewsView();
         newsView.setId(news.getId());
         newsView.setTitle(news.getTitle());
-        newsView.setDescription(newsView.getDescription());
+        newsView.setDescription(news.getDescription());
         newsView.setNewsDate(news.getNewsDate().format(FORMATTER));
         return newsView;
     }
