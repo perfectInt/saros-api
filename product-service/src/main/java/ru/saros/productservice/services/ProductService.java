@@ -1,6 +1,10 @@
 package ru.saros.productservice.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.saros.productservice.exceptions.ProductNotFoundException;
@@ -25,8 +29,10 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public List<ProductView> getProducts() {
-        List<Product> products = productRepository.findAll();
+    public List<ProductView> getProducts(Integer page) {
+        if (page == null) page = 0;
+        Pageable paging = PageRequest.of(page, 9, Sort.by("title"));
+        Page<Product> products = productRepository.findAll(paging);
         List<ProductView> productViews = new ArrayList<>();
         for (Product product : products) {
             ProductView productView = productMapper.toView(product);

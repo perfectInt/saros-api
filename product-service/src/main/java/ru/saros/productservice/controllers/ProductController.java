@@ -16,8 +16,8 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/products")
-    public List<ProductView> getAllProducts() {
-        return productService.getProducts();
+    public List<ProductView> getAllProductsByPage(@RequestParam(name = "page", required = false) Integer page) {
+        return productService.getProducts(page);
     }
 
     @GetMapping("/product/{id}")
