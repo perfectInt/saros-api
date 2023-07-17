@@ -1,15 +1,15 @@
-package ru.saros.productservice.exceptions;
+package ru.saros.newsservice.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
-public class ProductNotFoundException extends RuntimeException {
-    public ProductNotFoundException() {
+public class NewsNotFoundException extends RuntimeException {
+    public NewsNotFoundException() {
         super();
     }
 
-    public ProductNotFoundException(String message) {
+    public NewsNotFoundException(String message) {
         super(message);
     }
 
