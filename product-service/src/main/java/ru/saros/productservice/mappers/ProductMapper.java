@@ -13,6 +13,7 @@ public class ProductMapper {
 
     public ProductView toView(Product product) {
         ProductView productView = new ProductView();
+        productView.setId(product.getId());
         productView.setTitle(product.getTitle());
         productView.setCategory(product.getCategory());
         productView.setDescription(product.getDescription());
