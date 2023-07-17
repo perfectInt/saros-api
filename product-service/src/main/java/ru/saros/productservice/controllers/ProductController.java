@@ -3,7 +3,6 @@ package ru.saros.productservice.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.saros.productservice.models.Product;
 import ru.saros.productservice.services.ProductService;
 import ru.saros.productservice.views.ProductView;
 
@@ -22,7 +21,7 @@ public class ProductController {
     }
 
     @GetMapping("/product/{id}")
-    public Product getProduct(@PathVariable Long id) {
+    public ProductView getProduct(@PathVariable Long id) {
         return productService.getProductById(id);
     }
 
@@ -31,10 +30,7 @@ public class ProductController {
     public void createProduct(@RequestParam(name = "title") String title,
                               @RequestParam(name = "category") String category,
                               @RequestParam(name = "images[]") MultipartFile[] files) throws IOException {
-        Product product = new Product();
-        product.setCategory(category);
-        product.setTitle(title);
-        productService.saveProduct(product, files);
+        productService.saveProduct(title, category, files);
     }
 
     @DeleteMapping("/product/delete/{id}")

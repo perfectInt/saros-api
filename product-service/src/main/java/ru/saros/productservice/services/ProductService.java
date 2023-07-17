@@ -3,6 +3,9 @@ package ru.saros.productservice.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.saros.productservice.exceptions.ProductNotFoundException;
+import ru.saros.productservice.mappers.ImageMapper;
+import ru.saros.productservice.mappers.ProductMapper;
 import ru.saros.productservice.models.Image;
 import ru.saros.productservice.models.Product;
 import ru.saros.productservice.repositories.ProductRepository;
@@ -17,33 +20,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService {
 
+    private final ProductMapper productMapper;
+    private final ImageMapper imageMapper;
+
     private final ProductRepository productRepository;
 
     public List<ProductView> getProducts() {
         List<Product> products = productRepository.findAll();
         List<ProductView> productViews = new ArrayList<>();
         for (Product product : products) {
-            ProductView productView = new ProductView();
-            productView.setTitle(product.getTitle());
-            productView.setCategory(product.getCategory());
-            productView.setDescription(product.getDescription());
-            productView.setPreviewImageId(product.getPreviewImageId());
-            productView.setPrice(product.getPrice());
-            List<Long> ids = new ArrayList<>();
-            for (Image image : product.getImages()) {
-                ids.add(image.getId());
-            }
-            productView.setImagesIds(ids);
+            ProductView productView = productMapper.toView(product);
             productViews.add(productView);
         }
         return productViews;
     }
 
     @Transactional
-    public void saveProduct(Product product, MultipartFile[] files) throws IOException {
+    public void saveProduct(String title, String category, MultipartFile[] files) throws IOException {
+        Product product = productMapper.toEntity(title, category);
         List<Image> images = new ArrayList<>();
         for (MultipartFile file : files) {
-            Image image = toImageEntity(file);
+            Image image = imageMapper.toEntity(file);
             image.setProduct(product);
             images.add(image);
         }
@@ -59,17 +56,8 @@ public class ProductService {
     }
 
     @Transactional
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(RuntimeException::new);
-    }
-
-    private Image toImageEntity(MultipartFile file) throws IOException {
-        Image image = new Image();
-        image.setName(file.getName());
-        image.setOriginalFileName(file.getOriginalFilename());
-        image.setContentType(file.getContentType());
-        image.setSize(file.getSize());
-        image.setBytes(file.getBytes());
-        return image;
+    public ProductView getProductById(Long id) {
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Cannot find this product"));
+        return productMapper.toView(product);
     }
 }
