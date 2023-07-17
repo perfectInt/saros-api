@@ -12,4 +12,8 @@ public class ProductNotFoundException extends RuntimeException {
     public ProductNotFoundException(String message) {
         super(message);
     }
+
+    public HttpStatus getStatusCode() {
+        return HttpStatus.NOT_FOUND;
+    }
 }
