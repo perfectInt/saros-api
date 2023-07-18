@@ -17,7 +17,7 @@ public class JwtService {
     public static final String SECRET = "D395887D0451F900CFD2A10486E4C3C8C2DB11D081A60E8D22B934AA22303CE4";
 
     public void validateToken(final String token) {
-        Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJwt(token);
+        Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
     }
 
     public String generateToken(String username) {

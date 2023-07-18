@@ -29,10 +29,10 @@ public class AuthController {
         if (authentication.isAuthenticated()) return authService.generateToken(authRequestDto.getUsername());
         else throw new RuntimeException("invalid access");
     }
-
-    @GetMapping("/validate")
-    public String validateToken(@RequestParam("token") String token) {
-        authService.validateToken(token);
-        return "token is valid";
-    }
+//
+//    @GetMapping("/validate")
+//    public String validateToken(@RequestParam("token") String token) {
+//        authService.validateToken(token);
+//        return "token is valid";
+//    }
 }
