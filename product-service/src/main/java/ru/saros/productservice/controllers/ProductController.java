@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class ProductController {
 
     private final ProductService productService;
@@ -25,7 +26,7 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-    @PostMapping("/product/create")
+    @PostMapping("/create")
     @CrossOrigin
     public void createProduct(@RequestParam(name = "title") String title,
                               @RequestParam(name = "category") String category,
@@ -33,7 +34,7 @@ public class ProductController {
         productService.saveProduct(title, category, files);
     }
 
-    @DeleteMapping("/product/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
     }
