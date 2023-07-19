@@ -17,8 +17,10 @@ public class UserCredential {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "username", unique = true)
     private String username;
 
+    @Column(name = "email", unique = true)
     private String email;
 
     private String password;

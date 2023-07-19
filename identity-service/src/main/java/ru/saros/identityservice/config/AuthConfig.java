@@ -28,7 +28,7 @@ public class AuthConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests()
-                .antMatchers("/auth/register", "/auth/login", "/auth/validate").permitAll()
+                .antMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll()
                 .and()
                 .cors(AbstractHttpConfigurer::disable)
                 .build();
