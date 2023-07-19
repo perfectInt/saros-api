@@ -16,7 +16,7 @@ jobs:
 
       - name: Build and Test each service
         run: |
-          cd ../eureka-server
+          cd eureka-server
           ./mvnw clean package
           
           cd ../api-gateway
@@ -25,7 +25,7 @@ jobs:
           cd ../spring-cloud-config
           ./mvnw clean package
           
-          cd product-service
+          cd ../product-service
           ./mvnw clean package
           
           cd ../identity-service
