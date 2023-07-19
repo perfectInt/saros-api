@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build and Test each service
+        run: |
+          cd ../eureka-server
+          ./mvnw clean package
+          
+          cd ../api-gateway
+          ./mvnw clean package
+          
+          cd ../spring-cloud-config
+          ./mvnw clean package
+          
+          cd product-service
+          ./mvnw clean package
+          
+          cd ../identity-service
+          ./mvnw clean package
+          
+          cd ../news-service
+          ./mvnw clean package
+
+      - name: Docker setup
+        uses: actions/checkout@v2
+
+      - name: Build and push Docker images
+        run: |
+          docker build -t ${{ secrets.DOCKER_USER }}/eureka-server ./eureka-server
+          docker build -t ${{ secrets.DOCKER_USER }}/api-gateway ./api-gateway
+          docker build -t ${{ secrets.DOCKER_USER }}/spring-cloud-config ./spring-cloud-config-server
+          docker build -t ${{ secrets.DOCKER_USER }}/product-service ./product-service
+          docker build -t ${{ secrets.DOCKER_USER }}/news-service ./news-service
+          docker build -t ${{ secrets.DOCKER_USER }}/auth-service ./identity-service
+          
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username your-docker-username --password-stdin
+          docker push ${{ secrets.DOCKER_USER }}/product-service
+          docker push ${{ secrets.DOCKER_USER }}/news-service
+          docker push ${{ secrets.DOCKER_USER }}/auth-service
+          docker push ${{ secrets.DOCKER_USER }}/eureka-server
+          docker push ${{ secrets.DOCKER_USER }}/api-gateway
+          docker push ${{ secrets.DOCKER_USER }}/spring-cloud-config

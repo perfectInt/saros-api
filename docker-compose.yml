@@ -37,8 +37,23 @@ services:
     volumes:
       - db-news:/var/lib/postgresql/news/data
 
+  saros-users-db:
+    container_name: saros-users-db
+    image: postgres:14.3-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: users-db
+      POSTGRES_USER: ${SAROS_DB_USERNAME}
+      POSTGRES_PASSWORD: ${SAROS_DB_PASSWORD}
+    ports:
+      - "5434:5432"
+    volumes:
+      - db-news:/var/lib/postgresql/users/data
+
 volumes:
   db-products:
     driver: local
   db-news:
+    driver: local
+  db-users:
     driver: local
