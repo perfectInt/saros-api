@@ -1,5 +1,6 @@
 package ru.saros.productservice.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
@@ -30,6 +31,7 @@ public class Image {
     @Type(type = "org.hibernate.type.ImageType")
     private byte[] bytes;
 
+    @JsonBackReference
     @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
     private Product product;
 }

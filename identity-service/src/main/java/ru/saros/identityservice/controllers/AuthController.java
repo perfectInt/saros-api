@@ -1,10 +1,12 @@
 package ru.saros.identityservice.controllers;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.saros.identityservice.dto.AuthRequestDto;
 import ru.saros.identityservice.models.UserCredential;
 import ru.saros.identityservice.services.AuthService;
@@ -27,12 +29,12 @@ public class AuthController {
     public String getToken(@RequestBody AuthRequestDto authRequestDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDto.getUsername(), authRequestDto.getPassword()));
         if (authentication.isAuthenticated()) return authService.generateToken(authRequestDto.getUsername());
-        else throw new RuntimeException("invalid access");
+        else throw new ResponseStatusException(HttpStatus.FORBIDDEN, "invalid access");
     }
-//
-//    @GetMapping("/validate")
-//    public String validateToken(@RequestParam("token") String token) {
-//        authService.validateToken(token);
-//        return "token is valid";
-//    }
+
+    @GetMapping("/validate")
+    public String validateToken(@RequestParam("token") String token) {
+        authService.validateToken(token);
+        return "token is valid";
+    }
 }

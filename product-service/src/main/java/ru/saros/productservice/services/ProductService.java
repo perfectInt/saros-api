@@ -12,9 +12,11 @@ import ru.saros.productservice.mappers.ImageMapper;
 import ru.saros.productservice.mappers.ProductMapper;
 import ru.saros.productservice.models.Image;
 import ru.saros.productservice.models.Product;
+import ru.saros.productservice.repositories.ImageRepository;
 import ru.saros.productservice.repositories.ProductRepository;
 import ru.saros.productservice.views.ProductView;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,10 +31,12 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public List<ProductView> getProducts(Integer page) {
+    public List<ProductView> getProducts(Integer page, String category) {
         if (page == null) page = 0;
         Pageable paging = PageRequest.of(page, 9, Sort.by("title"));
-        Page<Product> products = productRepository.findAll(paging);
+        Page<Product> products;
+        if (category == null) products = productRepository.findAll(paging);
+        else products = productRepository.findAllByCategory(paging, category);
         List<ProductView> productViews = new ArrayList<>();
         for (Product product : products) {
             ProductView productView = productMapper.toView(product);
@@ -42,7 +46,7 @@ public class ProductService {
     }
 
     @Transactional
-    public void saveProduct(String title, String category, MultipartFile[] files) throws IOException {
+    public Product saveProduct(String title, String category, MultipartFile[] files) throws IOException {
         Product product = productMapper.toEntity(title, category);
         List<Image> images = new ArrayList<>();
         for (MultipartFile file : files) {
@@ -52,9 +56,10 @@ public class ProductService {
         }
         images.get(0).setPreviewImage(true);
         product.setImages(images);
-        Product toUpdatePreviewImage = productRepository.save(product);
-        toUpdatePreviewImage.setPreviewImageId(images.get(0).getId());
-        productRepository.save(toUpdatePreviewImage);
+        Product updateProduct = productRepository.save(product);
+        updateProduct.setPreviewImageId(images.get(0).getId());
+        productRepository.updateByProductIdItsPreviewImageId(updateProduct.getId(), updateProduct.getPreviewImageId());
+        return updateProduct;
     }
 
     public void deleteProduct(Long id) {

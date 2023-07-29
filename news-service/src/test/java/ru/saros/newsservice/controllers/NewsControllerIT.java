@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -33,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class NewsControllerTest {
+public class NewsControllerIT {
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -52,8 +54,9 @@ public class NewsControllerTest {
 
     @Test
     @Order(1)
+    @WithMockUser
     public void createNewsTest() throws Exception {
-        RequestBuilder requestBuilderPost = MockMvcRequestBuilders.post("/news/create")
+        RequestBuilder requestBuilderPost = MockMvcRequestBuilders.post("/api/v1/news/create")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(news));
@@ -73,8 +76,9 @@ public class NewsControllerTest {
 
     @Test
     @Order(2)
+    @WithAnonymousUser
     public void getCreatedNewsTest() throws Exception {
-        RequestBuilder requestBuilderGet = MockMvcRequestBuilders.get("/news/" + id)
+        RequestBuilder requestBuilderGet = MockMvcRequestBuilders.get("/api/v1/news/" + id)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
 
         MvcResult mvcResult = mockMvc.perform(requestBuilderGet).andReturn();
@@ -88,15 +92,16 @@ public class NewsControllerTest {
 
     @Test
     @Order(3)
+    @WithAnonymousUser
     public void getNewsByPagesTest() throws Exception {
-        RequestBuilder requestBuilderGet = MockMvcRequestBuilders.get("/news/")
+        RequestBuilder requestBuilderGet = MockMvcRequestBuilders.get("/api/v1/news/")
                 .accept(MediaType.APPLICATION_JSON_VALUE);
 
         mockMvc.perform(requestBuilderGet)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("length()").value(1));
 
-        requestBuilderGet = MockMvcRequestBuilders.get("/news/?page=1")
+        requestBuilderGet = MockMvcRequestBuilders.get("/api/v1/news?page=1")
                 .accept(MediaType.APPLICATION_JSON_VALUE);
 
         mockMvc.perform(requestBuilderGet)
@@ -106,24 +111,25 @@ public class NewsControllerTest {
 
     @Test
     @Order(4)
+    @WithMockUser
     public void updateNewsTest() throws Exception {
         news.setTitle("Another test title");
 
-        RequestBuilder requestBuilderPut = MockMvcRequestBuilders.put("/news/update")
+        RequestBuilder requestBuilderPut = MockMvcRequestBuilders.put("/api/v1/news/update")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(news));
 
         mockMvc.perform(requestBuilderPut);
 
-        RequestBuilder requestBuilderGet = MockMvcRequestBuilders.get("/news/")
+        RequestBuilder requestBuilderGet = MockMvcRequestBuilders.get("/api/v1/news/")
                 .accept(MediaType.APPLICATION_JSON_VALUE);
 
         mockMvc.perform(requestBuilderGet)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("length()").value(1));
 
-        requestBuilderGet = MockMvcRequestBuilders.get("/news/" + id)
+        requestBuilderGet = MockMvcRequestBuilders.get("/api/v1/news/" + id)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
 
         MvcResult mvcResult = mockMvc.perform(requestBuilderGet).andReturn();
@@ -137,11 +143,12 @@ public class NewsControllerTest {
 
     @Test
     @Order(5)
+    @WithMockUser
     public void deleteNewsTest() throws Exception {
-        RequestBuilder requestBuilderGet = MockMvcRequestBuilders.get("/news/" + id)
+        RequestBuilder requestBuilderGet = MockMvcRequestBuilders.get("/api/v1/news/" + id)
                 .accept(MediaType.APPLICATION_JSON_VALUE);
 
-        RequestBuilder requestBuilderDelete = MockMvcRequestBuilders.delete("/news/delete/" + id);
+        RequestBuilder requestBuilderDelete = MockMvcRequestBuilders.delete("/api/v1/news/delete/" + id);
 
         mockMvc.perform(requestBuilderDelete);
 
